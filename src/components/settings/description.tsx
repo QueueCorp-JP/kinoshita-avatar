@@ -19,56 +19,25 @@ const Description = () => {
         </div>
         <div className="mb-6">
           <div className="my-2 whitespace-pre-line">
-            {t('AboutThisApplicationDescription2')}
+            このアプリケーションについて
+            AITuberKitでは、WebブラウザだけでAIキャラクターとの会話を楽しめます。キャラクターの変更や性格設定、音声調整は各設定項目を確認してください。
           </div>
         </div>
         <div className="my-10">
           <div className="mb-4 text-xl font-bold">{t('Contact')}</div>
           <div className="my-2 whitespace-pre-line">
             <a
-              href="mailto:support@aituberkit.com"
+              href="mailto:taichi.taniguchi@queue-tech.jp"
               className="text-black hover:text-gray-800 hover:underline transition-all duration-300 ease-in-out"
             >
-              Email: support@aituberkit.com
-            </a>
-          </div>
-          <div className="my-2 whitespace-pre-line">
-            <a
-              href="https://twitter.com/tegnike"
-              className="text-black hover:text-gray-800 hover:underline transition-all duration-300 ease-in-out"
-            >
-              Twitter: @tegnike
+              Email: taichi.taniguchi@queue-tech.jp
             </a>
           </div>
         </div>
         <div className="mt-10">
           <div className="mb-4 text-xl font-bold">{t('Creator')}</div>
           <div className="my-2 whitespace-pre-line">
-            {t('CreatorDescription')}
-          </div>
-          <div className="my-2 whitespace-pre-line">
-            <a
-              href="https://nikechan.com"
-              className="text-black hover:text-gray-800 hover:underline transition-all duration-300 ease-in-out"
-            >
-              URL: https://nikechan.com
-            </a>
-          </div>
-        </div>
-        <div className="mt-10">
-          <div className="mb-4 text-xl font-bold">{t('Documentation')}</div>
-          <div className="my-2 whitespace-pre-line">
-            {t('DocumentationDescription')}
-          </div>
-          <div className="my-2 whitespace-pre-line">
-            <a
-              href="https://docs.aituberkit.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-black hover:text-gray-800 hover:underline transition-all duration-300 ease-in-out"
-            >
-              https://docs.aituberkit.com/
-            </a>
+            作成者: ジョン
           </div>
         </div>
       </div>

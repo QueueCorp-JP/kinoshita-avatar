@@ -24,7 +24,6 @@ const Settings = (props: Props) => {
     <div className="absolute z-40 w-full h-full bg-white/80 backdrop-blur ">
       <Header {...props} />
       <Main />
-      <Footer />
     </div>
   )
 }
@@ -33,7 +32,6 @@ export default Settings
 const Header = ({ onClickClose }: Pick<Props, 'onClickClose'>) => {
   return (
     <>
-      <GitHubLink />
       <div className="absolute m-6 z-15">
         <IconButton
           iconName="24/Close"
@@ -179,13 +177,5 @@ const Main = () => {
         </div>
       </div>
     </main>
-  )
-}
-
-const Footer = () => {
-  return (
-    <footer className="absolute py-1 bg-[#413D43] text-center text-white font-Montserrat bottom-0 w-full">
-      powered by ChatVRM from Pixiv / ver. 2.34.0
-    </footer>
   )
 }

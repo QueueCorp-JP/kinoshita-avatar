@@ -42,21 +42,21 @@ export default async function handler(
 
   try {
     // Parse the form
-    const [fields, files] = await new Promise<[formidable.Fields<string>, formidable.Files<string>]>(
-      (resolve, reject) => {
-        form.parse(req, (err, fields, files) => {
-          if (err) reject(err)
-          resolve([fields, files])
-        })
-      }
-    )
+    const [fields, files] = await new Promise<
+      [formidable.Fields<string>, formidable.Files<string>]
+    >((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err)
+        resolve([fields, files])
+      })
+    })
 
     // Get the uploaded file
     const fileArray = files.file
     if (!fileArray || fileArray.length === 0) {
       return res.status(400).json({ error: 'No file uploaded' })
     }
-    
+
     const file = Array.isArray(fileArray) ? fileArray[0] : fileArray
 
     // Check file type
@@ -71,19 +71,25 @@ export default async function handler(
 
     // Read the file
     const fileBuffer = fs.readFileSync(file.filepath)
-    
+
     // Log file info for debugging
-    console.log(`処理ファイル: ${file.originalFilename}, サイズ: ${fileBuffer.length} バイト, タイプ: ${extension}`)
-    
+    console.log(
+      `処理ファイル: ${file.originalFilename}, サイズ: ${fileBuffer.length} バイト, タイプ: ${extension}`
+    )
+
     // Convert to base64
     const base64Image = fileBuffer.toString('base64')
-    
+
     // Set proper MIME type
-    const mimeType = extension === '.pdf' ? 'application/pdf' : `image/${extension.substring(1)}`
+    const mimeType =
+      extension === '.pdf'
+        ? 'application/pdf'
+        : `image/${extension.substring(1)}`
     console.log(`MIMEタイプ: ${mimeType}`)
 
     // Initialize Gemini API
-    const apiKey = process.env.GEMINI_API_KEY || 'AIzaSyDquv5JsikJVqweEAOtMxEt5oTEtI4IMmc' // Use the provided API key
+    const apiKey =
+      process.env.GEMINI_API_KEY || 'AIzaSyDquv5JsikJVqweEAOtMxEt5oTEtI4IMmc' // Use the provided API key
     const genAI = new GoogleGenerativeAI(apiKey)
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' }) // Using the model that's already set
 
@@ -124,31 +130,31 @@ export default async function handler(
 
     try {
       // Call Gemini API for analysis
-      console.log("Gemini APIにリクエスト送信中...")
-      
+      console.log('Gemini APIにリクエスト送信中...')
+
       const result = await model.generateContent({
         contents: [
           {
             role: 'user',
             parts: [
               { text: prompt },
-              { inlineData: { mimeType, data: base64Image } }
-            ]
-          }
+              { inlineData: { mimeType, data: base64Image } },
+            ],
+          },
         ],
         generationConfig: {
           temperature: 0.2,
           maxOutputTokens: 4096, // 増やして詳細な分析を可能に
-        }
+        },
       })
 
       const response = result.response
       const text = response.text()
-      
+
       // For debugging
-      console.log("Gemini APIからの応答を受信しました")
-      console.log("応答プレビュー:", text.substring(0, 200) + "...")
-    
+      console.log('Gemini APIからの応答を受信しました')
+      console.log('応答プレビュー:', text.substring(0, 200) + '...')
+
       // Parse the JSON response
       try {
         // Extract JSON from the response (in case there's any extra text)
@@ -161,20 +167,21 @@ export default async function handler(
               incorrectAnswers: 0,
               totalAnswers: 0,
               proficiencyScore: 0,
-              details: "画像を適切に分析できませんでした。画像が鮮明で、テスト回答が見えることを確認してください。",
+              details:
+                '画像を適切に分析できませんでした。画像が鮮明で、テスト回答が見えることを確認してください。',
               questionList: [],
               weakAreas: [],
-              recommendedStudyTopics: []
-            }
+              recommendedStudyTopics: [],
+            },
           })
         }
-        
+
         const jsonStr = jsonMatch[0]
         const analysis = JSON.parse(jsonStr) as AnalysisResult
-        
+
         return res.status(200).json({
           success: true,
-          analysis
+          analysis,
         })
       } catch (parseError) {
         console.error('Gemini応答の解析エラー:', parseError)
@@ -185,17 +192,18 @@ export default async function handler(
             incorrectAnswers: 0,
             totalAnswers: 0,
             proficiencyScore: 0,
-            details: "画像の分析中にエラーが発生しました。応答形式が予期しないものでした。",
+            details:
+              '画像の分析中にエラーが発生しました。応答形式が予期しないものでした。',
             questionList: [],
             weakAreas: [],
-            recommendedStudyTopics: []
-          }
+            recommendedStudyTopics: [],
+          },
         })
       }
     } catch (aiError: any) {
       console.error('Gemini APIエラー:', aiError)
       console.error('エラー詳細:', aiError.message)
-      
+
       // Check for specific error types
       if (aiError.message && aiError.message.includes('RESOURCE_EXHAUSTED')) {
         return res.status(200).json({
@@ -204,14 +212,15 @@ export default async function handler(
             incorrectAnswers: 0,
             totalAnswers: 0,
             proficiencyScore: 0,
-            details: "ファイルが大きすぎるか、AIサービスが処理するには複雑すぎます。より小さいか単純なファイルを試してください。",
+            details:
+              'ファイルが大きすぎるか、AIサービスが処理するには複雑すぎます。より小さいか単純なファイルを試してください。',
             questionList: [],
             weakAreas: [],
-            recommendedStudyTopics: []
-          }
+            recommendedStudyTopics: [],
+          },
         })
       }
-      
+
       if (aiError.message && aiError.message.includes('INVALID_ARGUMENT')) {
         return res.status(200).json({
           success: true,
@@ -219,40 +228,48 @@ export default async function handler(
             incorrectAnswers: 0,
             totalAnswers: 0,
             proficiencyScore: 0,
-            details: "ファイル形式を正しく処理できませんでした。鮮明で適切にフォーマットされたPDFまたは画像ファイルをアップロードしていることを確認してください。",
+            details:
+              'ファイル形式を正しく処理できませんでした。鮮明で適切にフォーマットされたPDFまたは画像ファイルをアップロードしていることを確認してください。',
             questionList: [],
             weakAreas: [],
-            recommendedStudyTopics: []
-          }
+            recommendedStudyTopics: [],
+          },
         })
       }
-      
+
       return res.status(200).json({
         success: true,
         analysis: {
           incorrectAnswers: 0,
           totalAnswers: 0,
           proficiencyScore: 0,
-          details: "AIサービスへの接続中にエラーが発生しました。後でもう一度お試しください。",
+          details:
+            'AIサービスへの接続中にエラーが発生しました。後でもう一度お試しください。',
           questionList: [],
           weakAreas: [],
-          recommendedStudyTopics: []
-        }
+          recommendedStudyTopics: [],
+        },
       })
     }
   } catch (error: any) {
     console.error('テスト回答の処理エラー:', error)
-    console.error('エラー詳細:', error.message || '詳細なメッセージはありません')
-    
+    console.error(
+      'エラー詳細:',
+      error.message || '詳細なメッセージはありません'
+    )
+
     // Return a more specific error message based on the error type
-    let errorMessage = "ファイルの処理中にエラーが発生しました。別のファイルで再試行してください。"
-    
+    let errorMessage =
+      'ファイルの処理中にエラーが発生しました。別のファイルで再試行してください。'
+
     if (error.message && error.message.includes('maxFileSize')) {
-      errorMessage = "アップロードされたファイルが最大許容サイズ（10MB）を超えています。より小さいファイルをアップロードしてください。"
+      errorMessage =
+        'アップロードされたファイルが最大許容サイズ（10MB）を超えています。より小さいファイルをアップロードしてください。'
     } else if (error.message && error.message.includes('parse')) {
-      errorMessage = "アップロードされたファイルの解析中にエラーが発生しました。ファイルが破損していないことを確認してください。"
+      errorMessage =
+        'アップロードされたファイルの解析中にエラーが発生しました。ファイルが破損していないことを確認してください。'
     }
-    
+
     return res.status(200).json({
       success: true,
       analysis: {
@@ -262,8 +279,8 @@ export default async function handler(
         details: errorMessage,
         questionList: [],
         weakAreas: [],
-        recommendedStudyTopics: []
-      }
+        recommendedStudyTopics: [],
+      },
     })
   }
 }

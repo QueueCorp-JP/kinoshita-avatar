@@ -36,9 +36,7 @@ const Description = () => {
         </div>
         <div className="mt-10">
           <div className="mb-4 text-xl font-bold">{t('Creator')}</div>
-          <div className="my-2 whitespace-pre-line">
-            作成者: ジョン
-          </div>
+          <div className="my-2 whitespace-pre-line">作成者: ジョン</div>
         </div>
       </div>
     </>

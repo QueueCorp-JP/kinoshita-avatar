@@ -17,7 +17,9 @@ const TestAnswerUpload = () => {
   const [file, setFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [isExplaining, setIsExplaining] = useState(false)
-  const [currentExplanation, setCurrentExplanation] = useState<string | null>(null)
+  const [currentExplanation, setCurrentExplanation] = useState<string | null>(
+    null
+  )
   const [uploadResult, setUploadResult] = useState<{
     success: boolean
     message: string
@@ -130,100 +132,130 @@ const TestAnswerUpload = () => {
           {uploadResult.success && uploadResult.analysis && (
             <div className="mt-2">
               <p className="text-sm text-gray-700">
-                {t('IncorrectAnswers')}: {uploadResult.analysis.incorrectAnswers} /{' '}
+                {t('IncorrectAnswers')}:{' '}
+                {uploadResult.analysis.incorrectAnswers} /{' '}
                 {uploadResult.analysis.totalAnswers}
               </p>
               <p className="text-sm text-gray-700">
                 {t('ProficiencyScore')}:{' '}
                 {uploadResult.analysis.proficiencyScore.toFixed(1)}%
               </p>
-              
+
               {/* 問題リスト */}
-              {uploadResult.analysis.questionList && uploadResult.analysis.questionList.length > 0 && (
-                <div className="mt-3">
-                  <h4 className="font-medium text-sm mb-2">問題リスト:</h4>
-                  <div className="max-h-60 overflow-y-auto bg-white rounded p-2">
-                    <table className="min-w-full text-sm">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-1 px-2">問題番号</th>
-                          <th className="text-left py-1 px-2">結果</th>
-                          <th className="text-left py-1 px-2">説明</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {uploadResult.analysis.questionList.map((question) => (
-                          <tr key={question.questionNumber} className="border-b">
-                            <td className="py-1 px-2">{question.questionNumber}</td>
-                            <td className="py-1 px-2">
-                              <span className={question.isCorrect ? 'text-green-600' : 'text-red-600'}>
-                                {question.isCorrect ? '正解' : '不正解'}
-                              </span>
-                            </td>
-                            <td className="py-1 px-2">
-                              {question.explanation ? (
-                                <div className="flex items-center">
-                                  <span className="mr-2 text-xs">
-                                    {question.isCorrect
-                                      ? question.explanation?.substring(0, 20) + "..."
-                                      : t('IncorrectReason')}
-                                  </span>
-                                  <button
-                                    onClick={() => handleExplain(question)}
-                                    disabled={isExplaining}
-                                    className={`px-2 py-1 text-xs rounded ${
-                                      isExplaining
-                                        ? 'bg-gray-300 cursor-not-allowed'
-                                        : question.isCorrect
-                                          ? 'bg-green-500 hover:bg-green-600 text-white'
-                                          : 'bg-red-500 hover:bg-red-600 text-white'
-                                    }`}
-                                  >
-                                    {t('ExplanationButton')}
-                                  </button>
-                                </div>
-                              ) : (
-                                '-'
-                              )}
-                            </td>
+              {uploadResult.analysis.questionList &&
+                uploadResult.analysis.questionList.length > 0 && (
+                  <div className="mt-3">
+                    <h4 className="font-medium text-sm mb-2">問題リスト:</h4>
+                    <div className="max-h-60 overflow-y-auto bg-white rounded p-2">
+                      <table className="min-w-full text-sm">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-1 px-2">問題番号</th>
+                            <th className="text-left py-1 px-2">結果</th>
+                            <th className="text-left py-1 px-2">説明</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {uploadResult.analysis.questionList.map(
+                            (question) => (
+                              <tr
+                                key={question.questionNumber}
+                                className="border-b"
+                              >
+                                <td className="py-1 px-2">
+                                  {question.questionNumber}
+                                </td>
+                                <td className="py-1 px-2">
+                                  <span
+                                    className={
+                                      question.isCorrect
+                                        ? 'text-green-600'
+                                        : 'text-red-600'
+                                    }
+                                  >
+                                    {question.isCorrect ? '正解' : '不正解'}
+                                  </span>
+                                </td>
+                                <td className="py-1 px-2">
+                                  {question.explanation ? (
+                                    <div className="flex items-center">
+                                      <span className="mr-2 text-xs">
+                                        {question.isCorrect
+                                          ? question.explanation?.substring(
+                                              0,
+                                              20
+                                            ) + '...'
+                                          : t('IncorrectReason')}
+                                      </span>
+                                      <button
+                                        onClick={() => handleExplain(question)}
+                                        disabled={isExplaining}
+                                        className={`px-2 py-1 text-xs rounded ${
+                                          isExplaining
+                                            ? 'bg-gray-300 cursor-not-allowed'
+                                            : question.isCorrect
+                                              ? 'bg-green-500 hover:bg-green-600 text-white'
+                                              : 'bg-red-500 hover:bg-red-600 text-white'
+                                        }`}
+                                      >
+                                        {t('ExplanationButton')}
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    '-'
+                                  )}
+                                </td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-              )}
-              
+                )}
+
               {/* 弱点領域 */}
-              {uploadResult.analysis.weakAreas && uploadResult.analysis.weakAreas.length > 0 && (
-                <div className="mt-3">
-                  <h4 className="font-medium text-sm mb-1">弱点領域:</h4>
-                  <ul className="list-disc list-inside bg-white rounded p-2 text-sm">
-                    {uploadResult.analysis.weakAreas.map((area, index) => (
-                      <li key={index} className="py-1">{area}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              
+              {uploadResult.analysis.weakAreas &&
+                uploadResult.analysis.weakAreas.length > 0 && (
+                  <div className="mt-3">
+                    <h4 className="font-medium text-sm mb-1">弱点領域:</h4>
+                    <ul className="list-disc list-inside bg-white rounded p-2 text-sm">
+                      {uploadResult.analysis.weakAreas.map((area, index) => (
+                        <li key={index} className="py-1">
+                          {area}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
               {/* 推奨学習トピック */}
-              {uploadResult.analysis.recommendedStudyTopics && uploadResult.analysis.recommendedStudyTopics.length > 0 && (
-                <div className="mt-3">
-                  <h4 className="font-medium text-sm mb-1">推奨学習トピック:</h4>
-                  <ul className="list-disc list-inside bg-white rounded p-2 text-sm">
-                    {uploadResult.analysis.recommendedStudyTopics.map((topic, index) => (
-                      <li key={index} className="py-1">{topic}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              
+              {uploadResult.analysis.recommendedStudyTopics &&
+                uploadResult.analysis.recommendedStudyTopics.length > 0 && (
+                  <div className="mt-3">
+                    <h4 className="font-medium text-sm mb-1">
+                      推奨学習トピック:
+                    </h4>
+                    <ul className="list-disc list-inside bg-white rounded p-2 text-sm">
+                      {uploadResult.analysis.recommendedStudyTopics.map(
+                        (topic, index) => (
+                          <li key={index} className="py-1">
+                            {topic}
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
+
               {/* 詳細分析 */}
               {uploadResult.analysis.details && (
                 <div className="mt-3">
                   <h4 className="font-medium text-sm mb-1">詳細分析:</h4>
                   <div className="mt-1 p-2 bg-white rounded text-sm text-gray-700">
-                    <p className="whitespace-pre-line">{uploadResult.analysis.details}</p>
+                    <p className="whitespace-pre-line">
+                      {uploadResult.analysis.details}
+                    </p>
                   </div>
                 </div>
               )}
@@ -236,10 +268,14 @@ const TestAnswerUpload = () => {
       {currentExplanation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <h3 className="text-lg font-medium mb-4">{t('AvatarExplanation')}</h3>
+            <h3 className="text-lg font-medium mb-4">
+              {t('AvatarExplanation')}
+            </h3>
             <div className="whitespace-pre-line mb-4">
               <div className="bg-gray-100 p-3 rounded-lg mb-3 border-l-4 border-blue-500">
-                <p className="font-medium text-blue-800 mb-1">{t('ExplanationTitle')}</p>
+                <p className="font-medium text-blue-800 mb-1">
+                  {t('ExplanationTitle')}
+                </p>
                 <p>{currentExplanation}</p>
               </div>
               <div className="text-sm text-gray-600 mt-2">
@@ -262,50 +298,50 @@ const TestAnswerUpload = () => {
 
   // 解説ボタンがクリックされたときの処理
   function handleExplain(question: QuestionItem) {
-    if (!question.explanation) return;
-    
-    setIsExplaining(true);
-    setCurrentExplanation(question.explanation);
-    
+    if (!question.explanation) return
+
+    setIsExplaining(true)
+    setCurrentExplanation(question.explanation)
+
     // アバターに解説を読み上げさせる
-    const sessionId = generateMessageId();
-    
+    const sessionId = generateMessageId()
+
     // 不正解の場合は「悲しい」表情で説明し、正解の場合は「嬉しい」表情で説明
-    const emotion = question.isCorrect ? 'happy' : 'sad';
-    
+    const emotion = question.isCorrect ? 'happy' : 'sad'
+
     // 解説メッセージを作成
-    let message = t('ExplanationIntro', { number: question.questionNumber });
-    
+    let message = t('ExplanationIntro', { number: question.questionNumber })
+
     // 不正解の場合は特別なメッセージを追加
     if (!question.isCorrect) {
-      message += t('IncorrectExplanationIntro') + question.explanation;
+      message += t('IncorrectExplanationIntro') + question.explanation
     } else {
-      message += question.explanation;
+      message += question.explanation
     }
-    
+
     const talk: Talk = {
       message: message,
       emotion: emotion,
-    };
-    
+    }
+
     // メッセージをチャットログに追加
     homeStore.getState().upsertMessage({
       role: 'assistant',
       content: talk.message,
-    });
-    
+    })
+
     // アバターに読み上げさせる
     speakCharacter(
       sessionId,
       talk,
       () => {
-        homeStore.setState({ isSpeaking: true });
+        homeStore.setState({ isSpeaking: true })
       },
       () => {
-        homeStore.setState({ isSpeaking: false });
-        setIsExplaining(false);
+        homeStore.setState({ isSpeaking: false })
+        setIsExplaining(false)
       }
-    );
+    )
   }
 }
 

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import AdvancedSettings from './advancedSettings'
 import MessageReceiverSetting from './messageReceiver'
 import PresetQuestions from './presetQuestions'
+import TestAnswerUpload from './testAnswerUpload'
 
 const Other = () => {
   const { t } = useTranslation()
@@ -24,6 +25,7 @@ const Other = () => {
       <AdvancedSettings />
       <PresetQuestions />
       <MessageReceiverSetting />
+      <TestAnswerUpload />
     </>
   )
 }
